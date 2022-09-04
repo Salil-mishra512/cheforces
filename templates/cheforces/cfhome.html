@@ -1,0 +1,191 @@
+{% extends 'cheforces/base.html' %}
+
+
+{% block body_block %}
+<h2>HELLO {{userinfo.handle}}</h2>
+
+
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th scope="row">Handle</th>
+      <td><a href="https://codeforces.com/profile/{{userinfo.handle}}" target="_blank">{{userinfo.handle}}</a></td>
+    </tr>
+    <tr>
+      <th scope="row">Current Rating</th>
+      <td>{{userinfo.rating}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Max Rating</th>
+      <td>{{userinfo.maxRating}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Current Rank</th>
+      <td>{{userinfo.rank}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Total Solved</th>
+      <td>{{solved}}</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<table class = "table">
+    <h4>Contest data</h4>
+    {% for i,j in con_stats.items%}
+    <tr>
+      <th scope="row">{{i}}</th>
+      <td>{{j}}</td>
+    </tr>
+    {% endfor  %}
+</table>
+<div id="rating_distribution"></div>
+<div id="rating_change_timeline" style="width: 900px; height: 500px"></div>
+<div>
+{% for i,j in w_ans.items %}
+<span><a href="https://codeforces.com/contest/{{i}}" target="_blank">{{j}}</a></span>
+
+{% endfor %}
+    </div>
+<table>
+    <thead>
+        <tr>
+            <th colspan="2"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><div id="verdicts_pie_chart" style="width: 900px; height: 500px;"></div></td>
+            <td><div id="tags_pie_chart" style="width: 900px; height: 500px;"></div></td>
+        </tr>
+        <tr>
+          <td><div id="langs_pie_chart" style="width: 900px; height: 500px;"></div></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+         google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable({{verdicts_data|safe}});
+
+        var options = {
+          title: 'Verdicts'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('verdicts_pie_chart'));
+
+        chart.draw(data, options);
+      }
+</script>
+
+
+<script>
+       google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable({{tags_data|safe}});
+
+        var options = {
+          title: 'Tags'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('tags_pie_chart'));
+
+        chart.draw(data, options);
+      }
+</script>
+
+<script>
+  google.charts.load('current', {'packages':['corechart']});
+ google.charts.setOnLoadCallback(drawChart);
+
+ function drawChart() {
+
+   var data = google.visualization.arrayToDataTable({{langs_data|safe}});
+
+   var options = {
+     title: 'Languages used in accepted submissions'
+   };
+
+   var chart = new google.visualization.PieChart(document.getElementById('langs_pie_chart'));
+
+   chart.draw(data, options);
+ }
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable({{ratings_data|safe}});
+
+    var options = {
+      title: 'Rating Distribution of Problems',
+      hAxis: {
+        title: 'Rating',
+      },
+      vAxis: {
+        title: 'Number of Problems Solved',
+      },
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('rating_distribution'));
+
+    chart.draw(data, options);
+  }
+</script>
+
+
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('date');
+    data.addColumn('number');
+    data.addColumn({type: 'string', role: 'tooltip'});
+    {% for i,j,k in ratings_timeline %}
+        var ms = {{i}}*1000;
+        data.addRow([new Date(ms),{{j}},{{k|safe}}]);
+    {% endfor %}
+
+    var options = {
+      title: 'Rating Change Timeline',
+      hAxis: {
+        title: 'Contest Date',
+      },
+      vAxis: {
+        title: 'Rating',
+      },
+      pointSize: 5,
+      explorer: {
+        axis: ['horizontal','vertical'],
+        keepInBounds: true,
+        maxZoomIn: 10.0
+      },
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('rating_change_timeline'));
+
+    chart.draw(data, options);
+  }
+</script>
+
+
+
+<!--script for pie chart of tags -->
+
+{% endblock %}
+<!--</body>-->
+<!--</html>-->
